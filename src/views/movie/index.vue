@@ -7,8 +7,8 @@
 					<span>大连</span><i class="iconfont icon-lower-triangle"></i>
 				</router-link>
 				<div class="hot_swtich">
-					<router-link  class="hot_item" to="/movie/list/hot" tag='div'>正在热映</router-link>
-					<router-link  class="hot_item" to="/movie/list/coming" tag='div'>即将上映</router-link>
+					<router-link  class="hot_item" to="/movie/list/" tag='div'>正在热映</router-link>
+					<router-link  class="hot_item" to="/movie/coming/" tag='div'>即将上映</router-link>
 				</div>
 				<router-link class="search_entry" to="/movie/search" tag='div'>
 					<i class="iconfont icon-sousuo"></i>
@@ -25,8 +25,12 @@
 <script>
 	import vh from '@/components/header/index.vue'
 	import tabar from '@/components/tabar/index.vue'
+	/*import {mapGetters,mapActions} from 'vuex'*/
 	export default {
 		name: 'movie',
+		created(){
+			this.$store.dispatch('getGetLocation')
+		},
 		components: {
 			vh,
 			tabar

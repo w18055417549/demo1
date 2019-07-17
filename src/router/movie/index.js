@@ -15,6 +15,10 @@ export default{
 			component:()=>import('@/components/list')
 		},
 		{
+			path:'coming',
+			component:()=>import('@/components/coming')
+		},
+		{
 			path:'/movie',
 			redirect:'/movie/list'
 		}

@@ -15,18 +15,17 @@
 			</div>
 			<div class="cinema_body">
 				<ul>
-					<li>
+					<li v-for="item in cinemasData" :key="item.id">
 						<div>
-							<span>大地影院(澳东世纪店)</span>
-							<span class="q"><span class="price">22.9</span> 元起</span>
+							<span>{{item.nm}}</span>
+							<span class="q"><span class="price">{{item.sellPrice}}</span> 元起</span>
 						</div>
 						<div class="address">
-							<span>金州区大连经济技术开发区澳东世纪3层</span>
-							<span>1763.5km</span>
+							<span>{{item.addr}}</span>
+							<span>{{item.distance}}km</span>
 						</div>
 						<div class="card">
-                			<div>小吃</div>
-                			<div>折扣卡</div>
+                			<div v-for="(num,key) in item.tag" :key='key' v-if="num=='1'">{{key | formaTag}}</div>
        					</div>
 					</li>
 				</ul>
@@ -39,11 +38,35 @@
 <script>
 	import vh from '@/components/header/index.vue'
 	import tabar from '@/components/tabar/index.vue'
+	
 	export default{
 		name:'cinema',
+		data(){
+			return{
+				cinemasData:[]
+			}
+		},
 		components:{
 			vh,
 			tabar
+		},
+		filters:{
+			formaTag(key){
+				var card=[{k:'allowRefund',v:'改签'},{k:'endorse',v:'退'},{k:'sell',v:'折扣卡'},{k:'snack',v:'小吃'}]
+				for(var i=0;i<card.length;i++){
+					if(card[i].k==key){
+						return card[i].v;
+					}
+				}
+			}
+		},
+		mounted(){
+			this.axios.get('/api/cinemaList?cityId='+this.$store.state.city.cityId).then(res=>{
+				if(res.status==200){
+					this.$data.cinemasData=res.data.data.cinemas;
+				}
+				console.log(this.$data.cinemasData)
+			})
 		}
 	}
 </script>

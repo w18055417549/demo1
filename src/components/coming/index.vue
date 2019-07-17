@@ -5,12 +5,12 @@
 				<div class="pic_show"><img :src="item.img|setwh('128.100')"></div>
 				<div class="info_list">
 					<h2>{{item.nm}}<span v-if="item.version!=''" class="version">3D</span></h2>
-					<p>观众评 <span class="grade">{{item.sc}}</span></p>
+					<p><span class="person">{{item.wish}}</span> 人想看</p>
 					<p>主演: {{item.star}}</p>
-					<p>{{item.showInfo}}</p>
+					<p>{{item.rt}}上映</p>
 				</div>
-				<div class="btn_mall">
-					购票
+				<div class="btn_pre">
+					预售
 				</div>
 			</li>
 		</ul>
@@ -26,9 +26,9 @@
 			}
 		},
 		mounted() {
-			var _this=this;
-			this.axios.get('/api/movieOnInfoList?cityId=' + this.$store.state.city.cityId).then(res => {
-				var data = res.data.data.movieList;
+			var _this = this;
+			this.axios.get('/api/movieComingList?cityId=' +this.$store.state.city.cityId).then(res => {
+				var data = res.data.data.comingList;
 				var temp = [];
 				for(var i = 0; i < data.length; i++) {
 					temp.push(data[i])
