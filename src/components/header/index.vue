@@ -1,5 +1,6 @@
 <template>
 <div id="vheader">
+	<slot></slot>
 	<h1>{{title}}</h1>
 </div>
 </template>
@@ -7,7 +8,7 @@
 <script>
 	export default{
 		name:'vheader',
-		props:{
+		props:{       //父组通信 父-->子
 			title:{
 				type:String,
 				default:'喵喵电影'

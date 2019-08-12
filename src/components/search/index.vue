@@ -43,7 +43,10 @@
 					console.log(res.data.data)
 					if(JSON.stringify(res.data.data) != "{}"){
 						this.$data.data.movie=res.data.data.movies.list;
-						this.$data.data.cinema=res.data.data.cinemas.list;
+						if(res.data.data.cinemas){
+							this.$data.data.cinema=res.data.data.cinemas.list;
+						}
+						console.log(this.data.cinema)
 					}
 				})
 			}

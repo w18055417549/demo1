@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div id="main">
 		<vh title='我的影院'></vh>
 		<div id="content">
 			<div class="cinema_menu">
@@ -14,6 +14,7 @@
 				</div>
 			</div>
 			<div class="cinema_body">
+				<Bscroll>
 				<ul>
 					<li v-for="item in cinemasData" :key="item.id">
 						<div>
@@ -29,8 +30,10 @@
        					</div>
 					</li>
 				</ul>
+				</Bscroll>
 			</div>
 		</div>
+		<loading v-show="cinemasData.length==0"></loading>
 		<tabar></tabar>
 	</div>
 </template>
@@ -63,9 +66,8 @@
 		mounted(){
 			this.axios.get('/api/cinemaList?cityId='+this.$store.state.city.cityId).then(res=>{
 				if(res.status==200){
-					this.$data.cinemasData=res.data.data.cinemas;
+					this.cinemasData=res.data.data.cinemas;
 				}
-				console.log(this.$data.cinemasData)
 			})
 		}
 	}

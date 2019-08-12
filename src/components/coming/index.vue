@@ -1,5 +1,6 @@
 <template>
 	<div class="movie_body">
+		<Bscroll>
 		<ul>
 			<li v-for="item in data" :key='item.id'>
 				<div class="pic_show"><img :src="item.img|setwh('128.100')"></div>
@@ -14,6 +15,8 @@
 				</div>
 			</li>
 		</ul>
+		</Bscroll>
+		<loading v-show="data.length==0"></loading>
 	</div>
 </template>
 
@@ -22,18 +25,23 @@
 		name: 'list',
 		data() {
 			return {
-				data: []
+				data: [],
+				prevId:'-1'
 			}
 		},
-		mounted() {
-			var _this = this;
-			this.axios.get('/api/movieComingList?cityId=' +this.$store.state.city.cityId).then(res => {
+		activated() {
+			
+			var cityId=this.$store.state.city.cityId;
+			console.log(cityId)
+			if(this.prevId==cityId){return}
+			this.axios.get('/api/movieComingList?cityId=' +cityId).then(res => {
 				var data = res.data.data.comingList;
 				var temp = [];
 				for(var i = 0; i < data.length; i++) {
 					temp.push(data[i])
 				}
-				_this.$data.data = temp;
+				this.data = temp;
+				this.prevId=cityId;
 			})
 		}
 	}

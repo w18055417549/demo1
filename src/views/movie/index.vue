@@ -4,7 +4,7 @@
 		<div id="content">
 			<div class="movie_menu">
 				<router-link class="city_name" to="/movie/city" tag='div'> 
-					<span>大连</span><i class="iconfont icon-lower-triangle"></i>
+					<span>{{$store.state.city.citynm}}</span><i class="iconfont icon-lower-triangle"></i>
 				</router-link>
 				<div class="hot_swtich">
 					<router-link  class="hot_item" to="/movie/list/" tag='div'>正在热映</router-link>
@@ -19,21 +19,54 @@
 		  	</keep-alive>
 		</div>
 		<tabar></tabar>
+		<router-view name="detail"/>
 	</div>
 </template>
 
 <script>
+	import axios from 'axios'
+	import store from '@/store'
 	import vh from '@/components/header/index.vue'
 	import tabar from '@/components/tabar/index.vue'
-	/*import {mapGetters,mapActions} from 'vuex'*/
+	import detail from './detail.vue'
+	import {mapState,mapGetters,mapActions} from 'vuex'
+	import {msgbox} from '@/components/js/index.js'
 	export default {
 		name: 'movie',
-		created(){
-			this.$store.dispatch('getGetLocation')
+		data(){
+			return{
+
+			}
 		},
 		components: {
 			vh,
-			tabar
+			tabar,
+			detail
+		},
+		mounted(){
+			var currentPos="";
+			axios.get('/api/getLocation').then(res=>{
+				currentPos=res.data.data;
+			})
+			var that=this;
+			setTimeout(function(){
+				if(parseInt(that.$store.state.city.cityId)==currentPos.id){
+					return
+				}
+				msgbox({
+				title:'定位',
+				content:currentPos.nm,
+				cancelT:'取消',
+				confirmT:"确定切换",
+				confirmFn(){
+					console.log(this)
+					that.$store.state.city.citynm=currentPos.nm
+					that.$store.state.city.cityId=currentPos.id
+					that.onload()
+				}
+			})
+			},3000)
+			
 		}
 	}
 </script>

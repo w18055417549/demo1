@@ -1,26 +1,31 @@
 <template>
 	<div class="city_body">
 		<div class="city_list">
-			<div class="city_hot">
-				<h2>热门城市</h2>
-				<ul class="clearfix">
-					<li v-for="item in cityData.hotlist" :key="item.id">{{item.nm}}</li>
-				</ul>
-			</div>
-			<div class="city_sort" ref="city">
-				<div v-for="item in cityData.data">
-					<h2>{{item.index}}</h2>
-					<ul v-for="v in item.list">
-						<li :key="v.id">{{v.name}}</li>
-					</ul>
+			<Bscroll ref="scroll_list">
+				<div>
+					<div class="city_hot">
+						<h2>热门城市</h2>
+						<ul class="clearfix">
+							<li v-for="item in cityData.hotlist" :key="item.id" @tap="setPosition({nm:item.nm,id:item.id})">{{item.nm}}</li>
+						</ul>
+					</div>
+					<div class="city_sort" ref="city">
+						<div v-for="item in cityData.data">
+							<h2>{{item.index}}</h2>
+							<ul v-for="v in item.list">
+								<li :key="v.id" @tap="setPosition({nm:v.name,id:v.id})">{{v.name}}</li>
+							</ul>
+						</div>
+					</div>
 				</div>
-			</div>
+			</Bscroll>
 		</div>
 		<div class="city_index">
 			<ul>
 				<li v-for="(item,index) in cityData.data" :key="item.index" @click="tap(index)">{{item.index}}</li>
 			</ul>
 		</div>
+		<loading v-show="cityData.data.length=0"></loading>
 	</div>
 </template>
 
@@ -37,14 +42,27 @@
 		},
 		mounted() {
 			const _this = this;
+			var data=window.localStorage.getItem('data');
+			var hotlist=window.localStorage.getItem('hotlist');
+			if(data&&hotlist){
+				this.cityData.data=JSON.parse(data);
+				this.cityData.hotlist=JSON.parse(hotlist)
+			}else{
 			this.axios.get('/api/citylist').then((res) => {
 				var data = res.data.data.cities;
 				if(res.status == 200) {
-						_this.formaData(data)
+					_this.formaData(data)
 				}
 			})
+			}
 		},
 		methods: {
+			setPosition(data){
+				window.localStorage.setItem('nowCity',data.nm);
+				window.localStorage.setItem('nowCityId',data.id);
+				this.$store.commit('getGetLocation',data)
+				this.$router.push("/movie/list")
+			},
 			formaData(data) {
 				var hotlist = [];
 				var citylist = [];
@@ -54,17 +72,27 @@
 						hotlist.push(data[i]);
 					}
 					var firstLetter = data[i].py.substring(0, 1).toUpperCase();
-					if(toAdd(firstLetter)){
-						citylist.push({index:firstLetter,list:[{name:data[i].nm,id:data[i].id}]})
-					}else{
-						for(var j=0;j<citylist.length;j++){
-							if(citylist[j].index==firstLetter){
-								citylist[j].list.push({name:data[i].nm,id:data[i].id})
+					if(toAdd(firstLetter)) {
+						citylist.push({
+							index: firstLetter,
+							list: [{
+								name: data[i].nm,
+								id: data[i].id
+							}]
+						})
+					} else {
+						for(var j = 0; j < citylist.length; j++) {
+							if(citylist[j].index == firstLetter) {
+								citylist[j].list.push({
+									name: data[i].nm,
+									id: data[i].id
+								})
 							}
 						}
 					}
 				}
-				function toAdd(firstLetter){
+
+				function toAdd(firstLetter) {
 					for(var k = 0; k < citylist.length; k++) {
 						if(citylist[k].index == firstLetter) {
 							return false;
@@ -72,20 +100,22 @@
 					}
 					return true;
 				}
-				citylist.sort(function(a,b){
-					if(a.index<b.index){
+				citylist.sort(function(a, b) {
+					if(a.index < b.index) {
 						return -1
-					}else{
+					} else {
 						return 1
 					}
 				})
-				this.$data.cityData.hotlist=hotlist;
-				this.$data.cityData.data=citylist;
-				console.log(this.$data.cityData.hotlist)
+				this.$data.cityData.hotlist = hotlist;
+				this.$data.cityData.data = citylist;
+				window.localStorage.setItem('hotlist',JSON.stringify(hotlist))
+				window.localStorage.setItem('data',JSON.stringify(citylist))
 			},
-			tap(index){
-				var h2=this.$refs.city.getElementsByTagName('h2');
-				this.$refs.city.parentNode.scrollTop=h2[index].offsetTop;
+			tap(index) {
+				var h2 = this.$refs.city.getElementsByTagName('h2');
+				/*this.$refs.city.parentNode.parentNode.parentNode.scrollTop = h2[index].offsetTop;*/
+				this.$refs.scroll_list.toscrollTop(-h2[index].offsetTop);
 			}
 
 		}

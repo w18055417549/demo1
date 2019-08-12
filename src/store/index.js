@@ -6,8 +6,8 @@ Vue.use(Vuex)
 
 const state={
 	city:{
-		citynm:'',
-		cityId:''
+		citynm:window.localStorage.getItem('nowCity')||'北京',
+		cityId:window.localStorage.getItem('nowCityId')||'1'
 	}
 }
 const getters={
@@ -28,6 +28,7 @@ const actions={
 
 const mutations={
 	getGetLocation(state,res){
+		console.log(res)
 		state.city.citynm=res.nm;
 		state.city.cityId=res.id
 	}

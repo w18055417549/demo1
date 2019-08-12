@@ -19,6 +19,15 @@ export default{
 			component:()=>import('@/components/coming')
 		},
 		{
+			path:'detail/:movieId',
+			components:{
+				detail:()=>import('@/views/movie/detail')
+			},
+			props:{
+				detail:true
+			}
+		},
+		{
 			path:'/movie',
 			redirect:'/movie/list'
 		}
